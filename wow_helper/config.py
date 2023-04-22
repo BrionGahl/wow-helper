@@ -3,15 +3,18 @@ from os.path import join, dirname
 import sys
 from dotenv import load_dotenv
 
-from wow_helper.utils import config_version
+from wow_helper import utils
 
+
+logger = utils.get_logger(__name__)
 load_dotenv(join(dirname(__file__), '../.env'))
 
-if os.getenv('CONFIG_VERSION') != config_version():
+
+if os.getenv('CONFIG_VERSION') != utils.config_version():
     if os.path.isfile('../.env'):
-        print('ERROR: Missing environment variables.')
+        logger.error('Missing environment variables.')
         sys.exit(2)
-    print('ERROR: Unable to find required environment variables. Does your ".env" file exist?')
+    logger.error('Unable to find required environment variables. Does your ".env" file exist?')
     sys.exit(2)
 
 

@@ -5,6 +5,8 @@ from discord.ext import commands
 
 from wow_helper import config
 from wow_helper import utils
+from wow_helper import cogs
+from wow_helper import events
 
 logger = utils.get_logger(__name__)
 
@@ -20,11 +22,14 @@ bot = commands.Bot(intents=discord.Intents.all(), command_prefix=config.bot_pref
 
 
 @bot.event
-async def on_ready():
-    logger.info(f"WoW-Helper is ready to run.")
+async def on_ready() -> None:
+    logger.info(f'Loading extensions...')
+    events.__init__(bot)
+    await cogs.setup(bot)
+    logger.info(f'WoW-Helper is ready to run.')
 
 
-def main():
+def main() -> None:
     try:
         bot.run(config.bot_token())
     except Exception as e:
