@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 
 
-def __init__(bot: commands.Bot) -> None:
+def setup(bot: commands.Bot) -> None:
     message_send(bot)
 
 
