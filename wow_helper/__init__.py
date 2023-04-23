@@ -7,6 +7,8 @@ from wow_helper import config
 from wow_helper import utils
 from wow_helper import cogs
 from wow_helper import events
+from wow_helper import db
+
 
 logger = utils.get_logger(__name__)
 
@@ -24,15 +26,15 @@ bot = commands.Bot(intents=discord.Intents.all(), command_prefix=config.bot_pref
 @bot.event
 async def on_ready() -> None:
     logger.info(f'Loading extensions...')
-    events.__init__(bot)
+    events.setup(bot)
     await cogs.setup(bot)
     logger.info(f'WoW-Helper is ready to run.')
 
 
 def main() -> None:
+    db.ping()
     try:
         bot.run(config.bot_token())
-    except Exception as e:
-        logger.error("Failed to connect to DiscordAPI.")
-        print(e)
+    except discord.errors.LoginFailure as e:
+        logger.error(e)
         sys.exit(2)

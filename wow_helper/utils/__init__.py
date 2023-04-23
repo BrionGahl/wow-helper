@@ -18,6 +18,7 @@ def time() -> datetime:
 def get_logger(name: str) -> Logger:
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)
+    logger.propagate = False
 
     logging_handler = logging.StreamHandler()
     logging_handler.setLevel(logging.DEBUG)
