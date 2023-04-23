@@ -1,3 +1,4 @@
+from typing import Union
 import sqlalchemy
 from sqlalchemy.exc import DatabaseError
 from sqlalchemy.engine import URL
@@ -50,13 +51,16 @@ def ping() -> None:
     conn.close()
 
 
-def insert_guild(name: str, wow_name: str, wow_server: str) -> None:
+def insert_guild(g_id: int, name: str) -> None:
     conn = __connect()
     session = __create_session(conn)
 
-    new_guild = models.Guilds(name=name, wow_name=wow_name, wow_server=wow_server)
-    session.add(new_guild)
-    session.commit()
+    retrieved = session.query(models.Guilds).get(g_id)
+    if retrieved is None:
+        logger.info("New Discord guild detected, adding it to the database.")
+        new_guild = models.Guilds(id=g_id, name=name, wow_name=None, wow_server=None)
+        session.add(new_guild)
+        session.commit()
 
     session.close()
     conn.close()
