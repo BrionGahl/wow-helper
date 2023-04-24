@@ -24,7 +24,7 @@ url = URL.create(
 
 def __connect() -> sqlalchemy.Connection:
     engine = sqlalchemy.create_engine(url)
-    logger.info('Attempting to connect to supplied database...')
+    logger.info('Attempting to connect to database...')
     try:
         connection = engine.connect()
     except DatabaseError as e:
