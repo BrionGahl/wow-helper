@@ -1,8 +1,7 @@
 import requests
 import discord
-
-import json
 from discord.ext import commands
+import json
 
 from wow_helper import utils
 from wow_helper import config
@@ -40,7 +39,7 @@ class RaiderIO(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['raiderscore', 'io'])
-    async def score(self, ctx: commands.Context, name: str, realm: str):
+    async def score(self, ctx: commands.Context, name: str, realm: str) -> None:
         # More work to make it have char portrait
         params = {
             'region': 'us',
@@ -65,10 +64,7 @@ class RaiderIO(commands.Cog):
         await ctx.send(embed=embed)
 
     @score.error
-    async def score_error(self, ctx: commands.Context, error: commands.CommandError):
+    async def score_error(self, ctx: commands.Context, error: commands.CommandError) -> None:
         logger.error(f'{error}')
         await ctx.send(f'Usage: {config.bot_prefix()}score [CHARACTER] [REALM]')
 
-
-async def setup(bot: commands.Bot) -> None:
-    await bot.add_cog(RaiderIO(bot))
