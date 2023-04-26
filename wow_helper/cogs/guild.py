@@ -32,7 +32,7 @@ class Guild(commands.Cog):
 
 
     @commands.command()
-    async def test_guild(self, ctx: commands.Context) -> None: # TODO: Need check function to ensure data is correct... but looks promising
+    async def test_guild(self, ctx: commands.Context) -> None: # TODO: Need check function to ensure data is correct... but looks promising, perhaps a check will work.
         await ctx.message.author.send('Please enter your wow guild name, be sure to enclose it in quotes if it is more than one word!')
         name = await ctx.bot.wait_for('message')
         await ctx.message.author.send('Please enter your wow server name, be sure to enclose it in quotes if it is more than one word!')
