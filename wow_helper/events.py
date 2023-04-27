@@ -32,4 +32,6 @@ def guild_update_event(bot: commands.Bot):
 def message_send_event(bot: commands.Bot) -> None:
     @bot.event
     async def on_message(message) -> None:
+        if message.author == bot.user:
+            return
         await bot.process_commands(message)
