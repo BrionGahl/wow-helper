@@ -34,4 +34,6 @@ def message_send_event(bot: commands.Bot) -> None:
     async def on_message(message) -> None:
         if message.author == bot.user:
             return
+        if message.author.bot:
+            return
         await bot.process_commands(message)

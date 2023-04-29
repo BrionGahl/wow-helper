@@ -52,6 +52,19 @@ def ping() -> None:
     conn.close()
 
 
+def get_guild_information(g_id: int) -> Union[tuple[str, str], None]:
+    conn = __connect()
+    session = __create_session(conn)
+
+    try:
+        retrieved = session.query(models.Guilds).get(g_id)
+    except DataError as e:
+        logger.error('Failed to find guild information for respective guild.}')
+        return
+
+    return retrieved.wow_name, retrieved.wow_server
+
+
 def insert_guild(g_id: int, name: str) -> None:
     conn = __connect()
     session = __create_session(conn)
@@ -103,14 +116,55 @@ def delete_guild(g_id: int) -> None:
     logger.info("Transaction Complete.")
 
 
-def insert_user(guild_id: int, name: str, wow_name: str, wow_server: str) -> None:
+def get_user_information(u_id: int) -> Union[tuple[str, str], None]:
     conn = __connect()
     session = __create_session(conn)
 
-    new_user = models.Users(guild_id=guild_id, name=name, wow_name=wow_name, wow_server=wow_server)
-    session.add(new_user)
+    try:
+        retrieved = session.query(models.Users).get(u_id)
+    except DataError as e:
+        logger.error('Failed to find user information.}')
+        return
+
+    return retrieved.wow_name, retrieved.wow_server
+
+
+def insert_or_update_user(u_id: int, g_id: int, name: Union[str, None] = None, wow_name: Union[str, None] = None, wow_server: Union[str, None] = None) -> None:
+    conn = __connect()
+    session = __create_session(conn)
+
+    retrieved = session.query(models.Users).get(u_id)
+    if retrieved is None:
+        logger.info("New Discord guild member detected, adding it to the database.")
+
+        new_user = models.Users(id=u_id, guild_id=g_id, name=name, wow_name=wow_name, wow_server=wow_server)
+        session.add(new_user)
+    else:
+        logger.info("Updating information on current user.")
+
+        retrieved.guild_id = g_id
+        retrieved.name = name if name else retrieved.name
+        retrieved.wow_name = wow_name if wow_name else retrieved.wow_name
+        retrieved.wow_server = wow_server if wow_server else retrieved.wow_server
+
     session.commit()
 
     session.close()
     conn.close()
-    logger.info("Transaction complete.")
+    logger.info("Transaction Complete.")
+
+
+def delete_user(u_id: int) -> None:
+    conn = __connect()
+    session = __create_session(conn)
+    try:
+        logger.info(f"Deleting user under ID {u_id}.")
+        retrieved = session.query(models.Users).get(u_id)
+        session.delete(retrieved)
+        session.commit()
+    except DataError as e:
+        logger.error(f"Failed to delete guild under ID {u_id}.")
+
+    session.close()
+    conn.close()
+    logger.info("Transaction Complete.")
