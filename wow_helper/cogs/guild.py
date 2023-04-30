@@ -19,17 +19,16 @@ class Guild(commands.Cog):
         logger.info(f'Updating WoW guild for Discord guild {ctx.guild.id}')
 
         await ctx.message.author.send('Please enter your WoW guild name.')
-        name = await ctx.bot.wait_for('message')
+        name = await ctx.bot.wait_for('message', check=lambda m: m.author == ctx.author and m.channel == ctx.author.dm_channel)
 
         await ctx.message.author.send('Please enter your WoW server name.')
-        server = await ctx.bot.wait_for('message')
-
-        if name == '':
-            name = None
-        if server == '':
-            server = None
+        server = await ctx.bot.wait_for('message', check=lambda m: m.author == ctx.author and m.channel == ctx.author.dm_channel)
 
         db.update_guild(ctx.guild.id, name=ctx.guild.name, wow_name=name.content, wow_server=server.content)
         embed = discord.Embed(title='WoW Guild Set!')
-        embed.add_field(name='Congrats!', value='With this set, you can now automatically query data for your guild!')
+        embed.add_field(name='Congrats!', value='With this set, you can now automatically query data for your guild!', inline=False)
+        embed.add_field(name=f'{name.content}', value=f'{server.content}', inline=False)
+
+        await ctx.send(embed=embed)
+
         logger.info(f'Successfully updated guild data on guild {ctx.guild.id}.')
