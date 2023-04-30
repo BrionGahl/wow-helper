@@ -42,11 +42,9 @@ class RaiderIO(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['raiderscore', 'io'])
-    async def score(self, ctx: commands.Context, name: Union[str, None], realm: Union[str, None]) -> None:
+    async def score(self, ctx: commands.Context, name: Union[str, None], *, realm: Union[str, None]) -> None:
         if name is None and realm is None:
             char_info = db.get_user_information(ctx.author.id)
-            char_info = (char_info[0].lower(), char_info[1].lower().replace(' ', '-'))
-            logger.info(f'{char_info[0]}, {char_info[1]}')
         elif name is None or realm is None:
             logger.error('Impoper usage of score command.')
             await ctx.send(f'Usage: {config.bot_prefix()}score [CHARACTER REALM]')
@@ -58,6 +56,8 @@ class RaiderIO(commands.Cog):
             logger.error(f'Could not find information for user {ctx.author.id}.')
             await ctx.send('Be sure to use the command /set-character before executing this command with no arguments.')
             return
+
+        char_info = (char_info[0].lower(), char_info[1].lower().replace(' ', '-'))
 
         params = {
             'region': 'us',

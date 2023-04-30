@@ -120,9 +120,8 @@ def get_user_information(u_id: int) -> Union[tuple[str, str], None]:
     conn = __connect()
     session = __create_session(conn)
 
-    try:
-        retrieved = session.query(models.Users).get(u_id)
-    except DataError as e:
+    retrieved = session.query(models.Users).get(u_id)
+    if retrieved is None:
         logger.error('Failed to find user information.}')
         return
 

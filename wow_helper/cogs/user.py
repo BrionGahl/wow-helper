@@ -14,7 +14,6 @@ class User(commands.Cog):
         self.bot = bot
 
     @commands.command(description='Update WoW player name.', aliases=['set-character', 'character-name', 'register'])
-    @commands.has_permissions(administrator=True)
     async def register_user(self, ctx: commands.Context) -> None:
         logger.info(f'Updating WoW player name for Discord guild {ctx.guild.id}')
 
