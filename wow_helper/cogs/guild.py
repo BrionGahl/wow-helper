@@ -24,17 +24,12 @@ class Guild(commands.Cog):
         await ctx.message.author.send('Please enter your WoW server name.')
         server = await ctx.bot.wait_for('message')
 
-        if name == "":
+        if name == '':
             name = None
-        if server == "":
+        if server == '':
             server = None
 
         db.update_guild(ctx.guild.id, name=ctx.guild.name, wow_name=name.content, wow_server=server.content)
         embed = discord.Embed(title='WoW Guild Set!')
         embed.add_field(name='Congrats!', value='With this set, you can now automatically query data for your guild!')
         logger.info(f'Successfully updated guild data on guild {ctx.guild.id}.')
-
-    @register_guild.error
-    async def register_guild_error(self, ctx: commands.Context, error: commands.CommandError) -> None:
-        logger.error(f'{error}')
-        await ctx.send(f'Usage: {config.bot_prefix()}set-guild')
