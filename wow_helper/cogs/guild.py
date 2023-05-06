@@ -1,9 +1,9 @@
+import asyncio
+
 import discord
 from discord.ext import commands
 
-from wow_helper import utils
-from wow_helper import config
-from wow_helper import db
+from wow_helper import utils, db
 
 logger = utils.get_logger(__name__)
 
@@ -13,16 +13,21 @@ class Guild(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
 
-    @commands.command(description='Update WoW guild name.', aliases=['set-guild', 'guild-name'])
+    @commands.command(description='Update WoW guild name.', aliases=['set-guild', 'guild-name', 'register-guild'])
     @commands.has_permissions(administrator=True)
     async def register_guild(self, ctx: commands.Context) -> None:
         logger.info(f'Updating WoW guild for Discord guild {ctx.guild.id}')
 
-        await ctx.message.author.send('Please enter your WoW guild name.')
-        name = await ctx.bot.wait_for('message', check=lambda m: m.author == ctx.author and m.channel == ctx.author.dm_channel)
+        try:
+            await ctx.message.author.send('Please enter your WoW guild name.')
+            name = await ctx.bot.wait_for('message', timeout=60.0, check=lambda m: m.author == ctx.author and m.channel == ctx.author.dm_channel)
 
-        await ctx.message.author.send('Please enter your WoW server name.')
-        server = await ctx.bot.wait_for('message', check=lambda m: m.author == ctx.author and m.channel == ctx.author.dm_channel)
+            await ctx.message.author.send('Please enter your WoW server name.')
+            server = await ctx.bot.wait_for('message', timeout=60.0, check=lambda m: m.author == ctx.author and m.channel == ctx.author.dm_channel)
+        except asyncio.TimeoutError:
+            logger.error(f'Command timed out for user {ctx.author.id} on guild {ctx.guild.id}')
+            await ctx.message.author.send('Command timed out...')
+            return
 
         db.update_guild(ctx.guild.id, name=ctx.guild.name, wow_name=name.content, wow_server=server.content)
         embed = discord.Embed(title='WoW Guild Set!')
