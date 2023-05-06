@@ -4,15 +4,13 @@ from discord.ext import commands
 import json
 from typing import Union
 
-from wow_helper import utils
-from wow_helper import config
-from wow_helper import db
-
+from wow_helper import utils, config, db
 
 logger = utils.get_logger(__name__)
 
 RAIDER_IMG = 'https://cdnassets.raider.io/images/brand/Icon_FullColor_Square.png'
 RAIDER_API = 'https://raider.io/api/v1/'
+DEFAULT_REGION = 'us'
 
 
 class RaiderIO(commands.Cog):
@@ -23,7 +21,7 @@ class RaiderIO(commands.Cog):
     @commands.command(description='Returns the current week\'s affixes', aliases=['affix'])
     async def affixes(self, ctx: commands.Context) -> None:
         params = {
-            'region': 'us',
+            'region': DEFAULT_REGION,
             'locale': 'en'
         }
         logger.info(f'GET Request sent to {RAIDER_API}mythic-plus/affixes')
@@ -46,7 +44,7 @@ class RaiderIO(commands.Cog):
         if name is None and realm is None:
             char_info = db.get_user_information(ctx.author.id)
         elif name is None or realm is None:
-            logger.error('Impoper usage of score command.')
+            logger.error('Improper usage of score command.')
             await ctx.send(f'Usage: {config.bot_prefix()}score [CHARACTER REALM]')
             return
         else:

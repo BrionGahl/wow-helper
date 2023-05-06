@@ -1,14 +1,8 @@
 import sys
-
 import discord
 from discord.ext import commands
 
-from wow_helper import config
-from wow_helper import utils
-from wow_helper import cogs
-from wow_helper import events
-from wow_helper import db
-
+from wow_helper import config, utils, cogs, events, db
 
 logger = utils.get_logger(__name__)
 
@@ -25,7 +19,7 @@ bot = commands.Bot(intents=discord.Intents.all(), command_prefix=config.bot_pref
 
 @bot.event
 async def on_ready() -> None:
-    db.ping() # TODO : add logic to create tables in database if they don't exist when command fails
+    db.instantiate_tables()
     for guild in bot.guilds:
         db.insert_guild(guild.id, guild.name)
     logger.info(f'Loading extensions...')
