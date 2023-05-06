@@ -20,10 +20,13 @@ class RaiderIO(commands.Cog):
 
     @commands.command(description='Returns the current week\'s affixes', aliases=['affix'])
     async def affixes(self, ctx: commands.Context) -> None:
+        guild_info = db.get_guild_information(ctx.guild.id)
+        region = DEFAULT_REGION if guild_info[2] is None else guild_info[2]
         params = {
-            'region': DEFAULT_REGION,
+            'region': region,
             'locale': 'en'
         }
+
         logger.info(f'GET Request sent to {RAIDER_API}mythic-plus/affixes')
         response = requests.get(RAIDER_API + 'mythic-plus/affixes', params=params)
         if response.status_code != 200:
@@ -48,17 +51,17 @@ class RaiderIO(commands.Cog):
             await ctx.send(f'Usage: {config.bot_prefix()}score [CHARACTER REALM]')
             return
         else:
-            char_info = (name, realm)
+            char_info = (name, realm, DEFAULT_REGION)
 
         if char_info is None:
             logger.error(f'Could not find information for user {ctx.author.id}.')
             await ctx.send('Be sure to use the command /set-character before executing this command with no arguments.')
             return
 
-        char_info = (char_info[0].lower(), char_info[1].lower().replace(' ', '-'))
+        char_info = (char_info[0].lower(), char_info[1].lower().replace(' ', '-'), char_info[2])
 
         params = {
-            'region': 'us',
+            'region': char_info[2],
             'realm': char_info[1],
             'name': char_info[0],
             'fields': 'mythic_plus_scores_by_season:current'

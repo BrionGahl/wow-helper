@@ -20,3 +20,4 @@ class Users(Base):
     name: Mapped[str] = mapped_column(String(40))
     wow_name: Mapped[str] = mapped_column(String(24), nullable=True)
     wow_server: Mapped[str] = mapped_column(String(24), nullable=True)
+    wow_region: Mapped[str] = mapped_column(String(2), nullable=True)
