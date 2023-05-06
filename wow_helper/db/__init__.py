@@ -20,7 +20,7 @@ url = URL.create(
 engine = sqlalchemy.create_engine(url)
 
 
-def __connect() -> sqlalchemy.Connection:
+def _connect() -> sqlalchemy.Connection:
     logger.info('Attempting to connect to database...')
     try:
         connection = engine.connect()
@@ -32,7 +32,7 @@ def __connect() -> sqlalchemy.Connection:
     return connection
 
 
-def __create_session(connection: sqlalchemy.Connection) -> orm.Session:
+def _create_session(connection: sqlalchemy.Connection) -> orm.Session:
     logger.info('Creating session for transaction.')
     try:
         session = orm.Session(connection)
@@ -56,8 +56,8 @@ def instantiate_tables() -> None:
 
 
 def get_guild_information(g_id: int) -> Union[tuple[str, str, str], None]:
-    conn = __connect()
-    session = __create_session(conn)
+    conn = _connect()
+    session = _create_session(conn)
 
     try:
         retrieved = session.query(models.Guilds).get(g_id)
@@ -65,12 +65,12 @@ def get_guild_information(g_id: int) -> Union[tuple[str, str, str], None]:
         logger.error('Failed to find guild information for respective guild.}')
         return
 
-    return retrieved.wow_name, retrieved.wow_server, retrieved.wow_region
+    return retrieved.wow_name.strip(), retrieved.wow_server.strip(), retrieved.wow_region.strip()
 
 
 def insert_guild(g_id: int, name: str) -> None:
-    conn = __connect()
-    session = __create_session(conn)
+    conn = _connect()
+    session = _create_session(conn)
 
     retrieved = session.query(models.Guilds).get(g_id)
     if retrieved is None:
@@ -85,8 +85,8 @@ def insert_guild(g_id: int, name: str) -> None:
 
 
 def update_guild(g_id: int, name: Union[str, None] = None, wow_name: Union[str, None] = None, wow_server: Union[str, None] = None, wow_region: Union[str, None] = None) -> None:
-    conn = __connect()
-    session = __create_session(conn)
+    conn = _connect()
+    session = _create_session(conn)
 
     logger.info('Updating information on current guild.')
 
@@ -105,8 +105,8 @@ def update_guild(g_id: int, name: Union[str, None] = None, wow_name: Union[str, 
 
 
 def delete_guild(g_id: int) -> None:
-    conn = __connect()
-    session = __create_session(conn)
+    conn = _connect()
+    session = _create_session(conn)
     try:
         logger.info(f'Deleting guild under ID {g_id}.')
         retrieved = session.query(models.Guilds).get(g_id)
@@ -120,27 +120,27 @@ def delete_guild(g_id: int) -> None:
     logger.info('Transaction Complete.')
 
 
-def get_user_information(u_id: int) -> Union[tuple[str, str], None]:
-    conn = __connect()
-    session = __create_session(conn)
+def get_user_information(u_id: int) -> Union[tuple[str, str, str], None]:
+    conn = _connect()
+    session = _create_session(conn)
 
     retrieved = session.query(models.Users).get(u_id)
     if retrieved is None:
         logger.error('Failed to find user information.}')
         return
 
-    return retrieved.wow_name.strip(), retrieved.wow_server.strip()
+    return retrieved.wow_name.strip(), retrieved.wow_server.strip(), retrieved.wow_realm.strip()
 
 
-def insert_or_update_user(u_id: int, g_id: int, name: Union[str, None] = None, wow_name: Union[str, None] = None, wow_server: Union[str, None] = None) -> None:
-    conn = __connect()
-    session = __create_session(conn)
+def insert_or_update_user(u_id: int, g_id: int, name: Union[str, None] = None, wow_name: Union[str, None] = None, wow_server: Union[str, None] = None, wow_region: Union[str, None] = None) -> None:
+    conn = _connect()
+    session = _create_session(conn)
 
     retrieved = session.query(models.Users).get(u_id)
     if retrieved is None:
         logger.info('New Discord guild member detected, adding it to the database.')
 
-        new_user = models.Users(id=u_id, guild_id=g_id, name=name, wow_name=wow_name, wow_server=wow_server)
+        new_user = models.Users(id=u_id, guild_id=g_id, name=name, wow_name=wow_name, wow_server=wow_server, wow_region=wow_region)
         session.add(new_user)
     else:
         logger.info('Updating information on current user.')
@@ -149,6 +149,7 @@ def insert_or_update_user(u_id: int, g_id: int, name: Union[str, None] = None, w
         retrieved.name = name if name else retrieved.name
         retrieved.wow_name = wow_name if wow_name else retrieved.wow_name
         retrieved.wow_server = wow_server if wow_server else retrieved.wow_server
+        retrieved.wow_region = wow_region if wow_region else retrieved.wow_region
 
     session.commit()
 
@@ -158,8 +159,8 @@ def insert_or_update_user(u_id: int, g_id: int, name: Union[str, None] = None, w
 
 
 def delete_user(u_id: int) -> None:
-    conn = __connect()
-    session = __create_session(conn)
+    conn = _connect()
+    session = _create_session(conn)
     try:
         logger.info(f'Deleting user under ID {u_id}.')
         retrieved = session.query(models.Users).get(u_id)

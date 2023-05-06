@@ -1,9 +1,7 @@
 import datetime
 import logging
 from logging import Logger
-from typing import Union
-from discord import Message, Reaction, User, Member
-from discord.ext import commands
+
 
 def version() -> str:
     return "v0.0.1"

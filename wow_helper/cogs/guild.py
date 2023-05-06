@@ -4,6 +4,7 @@ import discord
 from discord.ext import commands
 
 from wow_helper import utils, db
+from wow_helper.api.blizzard_api import BlizzardAPI
 
 logger = utils.get_logger(__name__)
 
@@ -17,6 +18,7 @@ class Guild(commands.Cog):
     @commands.has_permissions(administrator=True)
     async def register_guild(self, ctx: commands.Context) -> None:
         logger.info(f'Updating WoW guild for Discord guild {ctx.guild.id}')
+        blizzard_api = BlizzardAPI()
 
         try:
             await ctx.message.author.send('Please enter your WoW guild name.')
@@ -29,7 +31,9 @@ class Guild(commands.Cog):
             await ctx.message.author.send('Command timed out...')
             return
 
-        db.update_guild(ctx.guild.id, name=ctx.guild.name, wow_name=name.content, wow_server=server.content)
+        #TODO : BACK TO REACTIONS
+
+        db.update_guild(ctx.guild.id, name=ctx.guild.name, wow_name=name.content, wow_server=server.content, wow_region=region)
         embed = discord.Embed(title='WoW Guild Set!')
         embed.add_field(name='Congrats!', value='With this set, you can now automatically query data for your guild!', inline=False)
         embed.add_field(name=f'{name.content}', value=f'{server.content}', inline=False)
