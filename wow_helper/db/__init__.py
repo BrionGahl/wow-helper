@@ -129,7 +129,7 @@ def get_user_information(u_id: int) -> Union[tuple[str, str, str], None]:
         logger.error('Failed to find user information.}')
         return
 
-    return retrieved.wow_name.strip(), retrieved.wow_server.strip(), retrieved.wow_realm.strip()
+    return retrieved.wow_name.strip(), retrieved.wow_server.strip(), retrieved.wow_region.strip()
 
 
 def insert_or_update_user(u_id: int, g_id: int, name: Union[str, None] = None, wow_name: Union[str, None] = None, wow_server: Union[str, None] = None, wow_region: Union[str, None] = None) -> None:

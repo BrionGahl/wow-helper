@@ -6,6 +6,7 @@ from wow_helper.api import Namespace
 logger = utils.get_logger(__name__)
 BLIZZARD_API = 'https://{0}.api.blizzard.com{1}'
 
+
 # TODO : MORE WORK SHELVED FOR LATER
 class BlizzardAPI:
     def __init__(self):
