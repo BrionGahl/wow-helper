@@ -40,7 +40,7 @@ class Guild(commands.Cog):
         db.update_guild(ctx.guild.id, name=ctx.guild.name, wow_name=name.content, wow_server=server.content, wow_region=reactions[reaction.emoji])
         embed = discord.Embed(title='WoW Guild Set!')
         embed.add_field(name='Congrats!', value='With this set, you can now automatically query data for your guild!', inline=False)
-        embed.add_field(name=f'{name.content}', value=f'{server.content}, {reactions[reaction.emoji]}', inline=False)
+        embed.add_field(name=f'{name.content}', value=f'{server.content}, {reactions[reaction.emoji].upper()}', inline=False)
 
         await ctx.send(embed=embed)
 

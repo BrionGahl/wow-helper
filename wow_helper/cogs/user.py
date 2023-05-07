@@ -38,7 +38,7 @@ class User(commands.Cog):
         db.insert_or_update_user(ctx.author.id, ctx.guild.id, ctx.author.name, wow_name=name.content, wow_server=server.content, wow_region=reactions[reaction.emoji]) # need to insert if no exist update if exist
         embed = discord.Embed(title='WoW Character Name Set!')
         embed.add_field(name='Congrats!', value='With this set, you can now automatically query data for your character!', inline=False)
-        embed.add_field(name=f'{name.content}', value=f'{server.content}, {reactions[reaction.emoji]}', inline=False)
+        embed.add_field(name=f'{name.content}', value=f'{server.content}, {reactions[reaction.emoji].upper()}', inline=False)
 
         await ctx.send(embed=embed)
 
