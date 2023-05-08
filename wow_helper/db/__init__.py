@@ -59,21 +59,23 @@ def get_guild_information(g_id: int) -> Union[tuple[str, str, str], None]:
     conn = _connect()
     session = _create_session(conn)
 
-    try:
-        retrieved = session.query(models.Guilds).get(g_id)
-    except DataError as e:
-        logger.error('Failed to find guild information for respective guild.}')
+    retrieved = session.query(models.Guilds).get(g_id)
+    if retrieved is None:
+        logger.error('Failed to find guild information.}')
         return
 
     return retrieved.wow_name.strip(), retrieved.wow_server.strip(), retrieved.wow_region.strip()
 
 
-def insert_guild(g_id: int, name: str) -> None:
+def insert_guild(g_id: int, name: str) -> bool:
     conn = _connect()
     session = _create_session(conn)
 
+    added = False
+
     retrieved = session.query(models.Guilds).get(g_id)
     if retrieved is None:
+        added = True
         logger.info('New Discord guild detected, adding it to the database.')
         new_guild = models.Guilds(id=g_id, name=name, wow_name=None, wow_server=None, wow_region=None)
         session.add(new_guild)
@@ -82,9 +84,10 @@ def insert_guild(g_id: int, name: str) -> None:
     session.close()
     conn.close()
     logger.info('Transaction complete.')
+    return added
 
 
-def update_guild(g_id: int, name: Union[str, None] = None, wow_name: Union[str, None] = None, wow_server: Union[str, None] = None, wow_region: Union[str, None] = None) -> None:
+def update_guild(g_id: int, name: Union[str, None] = None, wow_name: Union[str, None] = None, wow_server: Union[str, None] = None, wow_region: Union[str, None] = None) -> models.Guilds:
     conn = _connect()
     session = _create_session(conn)
 
@@ -103,21 +106,27 @@ def update_guild(g_id: int, name: Union[str, None] = None, wow_name: Union[str, 
     conn.close()
     logger.info('Transaction complete.')
 
+    return retrieved
 
-def delete_guild(g_id: int) -> None:
+
+def delete_guild(g_id: int) -> bool:
     conn = _connect()
     session = _create_session(conn)
-    try:
-        logger.info(f'Deleting guild under ID {g_id}.')
-        retrieved = session.query(models.Guilds).get(g_id)
-        session.delete(retrieved)
-        session.commit()
-    except DataError as e:
-        logger.error(f'Failed to delete guild under ID {g_id}.')
+
+    logger.info(f'Deleting guild under ID {g_id}.')
+    retrieved = session.query(models.Guilds).get(g_id)
+
+    if retrieved is None:
+        logger.error(f'Failed to delete guild under ID {g_id}, no guild found.')
+        return False
+
+    session.delete(retrieved)
+    session.commit()
 
     session.close()
     conn.close()
     logger.info('Transaction Complete.')
+    return True
 
 
 def get_user_information(u_id: int) -> Union[tuple[str, str, str], None]:
@@ -132,7 +141,7 @@ def get_user_information(u_id: int) -> Union[tuple[str, str, str], None]:
     return retrieved.wow_name.strip(), retrieved.wow_server.strip(), retrieved.wow_region.strip()
 
 
-def insert_or_update_user(u_id: int, g_id: int, name: Union[str, None] = None, wow_name: Union[str, None] = None, wow_server: Union[str, None] = None, wow_region: Union[str, None] = None) -> None:
+def insert_or_update_user(u_id: int, g_id: int, name: Union[str, None] = None, wow_name: Union[str, None] = None, wow_server: Union[str, None] = None, wow_region: Union[str, None] = None) -> models.Users:
     conn = _connect()
     session = _create_session(conn)
 
@@ -140,8 +149,8 @@ def insert_or_update_user(u_id: int, g_id: int, name: Union[str, None] = None, w
     if retrieved is None:
         logger.info('New Discord guild member detected, adding it to the database.')
 
-        new_user = models.Users(id=u_id, guild_id=g_id, name=name, wow_name=wow_name, wow_server=wow_server, wow_region=wow_region)
-        session.add(new_user)
+        retrieved = models.Users(id=u_id, guild_id=g_id, name=name, wow_name=wow_name, wow_server=wow_server, wow_region=wow_region)
+        session.add(retrieved)
     else:
         logger.info('Updating information on current user.')
 
@@ -156,19 +165,24 @@ def insert_or_update_user(u_id: int, g_id: int, name: Union[str, None] = None, w
     session.close()
     conn.close()
     logger.info('Transaction Complete.')
+    return retrieved
 
 
-def delete_user(u_id: int) -> None:
+def delete_user(u_id: int) -> bool:
     conn = _connect()
     session = _create_session(conn)
-    try:
-        logger.info(f'Deleting user under ID {u_id}.')
-        retrieved = session.query(models.Users).get(u_id)
-        session.delete(retrieved)
-        session.commit()
-    except DataError as e:
-        logger.error(f'Failed to delete guild under ID {u_id}.')
+
+    logger.info(f'Deleting user under ID {u_id}.')
+    retrieved = session.query(models.Users).get(u_id)
+
+    if retrieved is None:
+        logger.error(f'Failed to delete user under ID {u_id}, no user found.')
+        return False
+
+    session.delete(retrieved)
+    session.commit()
 
     session.close()
     conn.close()
     logger.info('Transaction Complete.')
+    return True

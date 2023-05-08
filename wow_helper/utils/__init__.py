@@ -4,11 +4,11 @@ from logging import Logger
 
 
 def version() -> str:
-    return "v0.0.1"
+    return 'v0.0.1'
 
 
 def config_version() -> str:
-    return "0.1"
+    return '0.1'
 
 
 def time() -> datetime:

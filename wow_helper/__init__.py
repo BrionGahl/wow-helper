@@ -6,7 +6,7 @@ from wow_helper import config, utils, cogs, events, db
 
 logger = utils.get_logger(__name__)
 
-print("""
+print(r"""
  __      __ __      __   _  _     _               
  \ \    / /_\ \    / /__| || |___| |_ __  ___ _ _ 
   \ \/\/ / _ \ \/\/ /___| __ / -_) | '_ \/ -_) '_|

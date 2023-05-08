@@ -16,3 +16,5 @@ SQLAlchemy==2.0.10
 typing_extensions==4.5.0
 urllib3==1.26.15
 yarl==1.9.1
+pytest==7.3.1
+pytest-cov==4.0.0
