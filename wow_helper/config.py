@@ -5,6 +5,11 @@ from dotenv import load_dotenv
 
 from wow_helper import utils
 
+"""
+Contains useful config information in the form of functions to be utilized by various components of the bot where
+necessary.
+"""
+
 logger = utils.get_logger(__name__)
 load_dotenv(join(dirname(__file__), '../.env'))
 
