@@ -9,7 +9,7 @@ logger = utils.get_logger(__name__)
 
 
 class User(commands.Cog):
-    """Commands relating to wow guild assignment operations."""
+    """Commands relating to WoW character assignment operations."""
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
 

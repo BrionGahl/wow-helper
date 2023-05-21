@@ -3,6 +3,8 @@ from discord.ext import commands
 
 from wow_helper import db
 
+"""Event initialization for the bot to change behavior during specific actions on a server."""
+
 
 def setup(bot: commands.Bot) -> None:
     message_send_event(bot)

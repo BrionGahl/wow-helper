@@ -4,6 +4,11 @@ from discord.ext import commands
 
 from wow_helper import config, utils, cogs, events, db
 
+"""
+Secondary entry point for the bot. This module stores information relating to the main function and some extension setup
+prior to starting execution.
+"""
+
 logger = utils.get_logger(__name__)
 
 print(r"""

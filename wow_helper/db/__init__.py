@@ -8,6 +8,11 @@ from sqlalchemy.engine import URL
 from wow_helper import utils, config
 from wow_helper.db import models
 
+"""
+Functions used in creating connections and sessions to the Postgres Database, as well as transactions and CRUD
+operations.
+"""
+
 logger = utils.get_logger(__name__)
 url = URL.create(
         drivername='postgresql',
