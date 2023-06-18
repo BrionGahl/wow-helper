@@ -35,8 +35,7 @@ class Guild(commands.Cog):
             logger.error(f'Command timed out for user {ctx.author.id} on guild {ctx.guild.id}')
             await ctx.message.author.send('Command timed out...')
             return
-
-
+        
         db.update_guild(ctx.guild.id, name=ctx.guild.name, wow_name=name.content, wow_server=server.content, wow_region=reactions[reaction.emoji])
         embed = discord.Embed(title='WoW Guild Set!')
         embed.add_field(name='Congrats!', value='With this set, you can now automatically query data for your guild!', inline=False)

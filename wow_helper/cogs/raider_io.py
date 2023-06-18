@@ -48,7 +48,7 @@ class RaiderIO(commands.Cog):
             char_info = db.get_user_information(ctx.author.id)
         elif name is None or realm is None:
             logger.error('Improper usage of score command.')
-            await ctx.send(f'Usage: {config.bot_prefix()}score [CHARACTER REALM]')
+            await ctx.send(f'Usage: {config.bot_prefix()}score CHARACTER REALM')
             return
         else:
             char_info = (name, realm, DEFAULT_REGION)

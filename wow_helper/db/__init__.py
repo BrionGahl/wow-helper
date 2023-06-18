@@ -29,7 +29,7 @@ def _connect() -> sqlalchemy.Connection:
     logger.info('Attempting to connect to database...')
     try:
         connection = engine.connect()
-    except DatabaseError as e:
+    except OperationalError as e:
         logger.error(e)
         logger.error('Unable to connect to database. Exiting...')
         sys.exit(1)
@@ -41,7 +41,7 @@ def _create_session(connection: sqlalchemy.Connection) -> orm.Session:
     logger.info('Creating session for transaction.')
     try:
         session = orm.Session(connection)
-    except DatabaseError as e:
+    except OperationalError as e:
         logger.error(e)
         logger.error('Failed to create a session.')
         sys.exit(1)
@@ -54,7 +54,6 @@ def instantiate_tables() -> None:
         models.Guilds.__table__.create(bind=engine, checkfirst=True)
         models.Users.__table__.create(bind=engine, checkfirst=True)
     except OperationalError as e:
-        logger.error(e)
         logger.error('Failed to connect to the database.')
         sys.exit(1)
     logger.info('Database verified and configured.')
@@ -146,7 +145,7 @@ def get_user_information(u_id: int) -> Union[tuple[str, str, str], None]:
     return retrieved.wow_name.strip(), retrieved.wow_server.strip(), retrieved.wow_region.strip()
 
 
-def insert_or_update_user(u_id: int, g_id: int, name: Union[str, None] = None, wow_name: Union[str, None] = None, wow_server: Union[str, None] = None, wow_region: Union[str, None] = None) -> models.Users:
+def upsert_user(u_id: int, g_id: int, name: Union[str, None] = None, wow_name: Union[str, None] = None, wow_server: Union[str, None] = None, wow_region: Union[str, None] = None) -> models.Users:
     conn = _connect()
     session = _create_session(conn)
 
