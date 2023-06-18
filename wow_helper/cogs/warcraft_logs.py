@@ -21,11 +21,12 @@ class WarcraftLogs(commands.Cog):
     async def parses(self, ctx: commands.Context, name: Union[str, None], *, realm: Union[str, None]) -> None:
         api = WarcraftLogsAPI()
 
+        # TODO: Make this a callable function
         if name is None and realm is None:
             char_info = db.get_user_information(ctx.author.id)
         elif name is None or realm is None:
             logger.error('Improper usage of score command.')
-            await ctx.send(f'Usage: {config.bot_prefix()}score CHARACTER REALM')
+            await ctx.send(f'Usage: {config.bot_prefix()}parses CHARACTER REALM')
             return
         else:
             char_info = (name, realm, DEFAULT_REGION)
@@ -38,3 +39,5 @@ class WarcraftLogs(commands.Cog):
         char_info = (char_info[0].lower(), char_info[1].lower().replace(' ', '-'), char_info[2])
 
         response = api.get_character_parses(char_info[0], char_info[1], char_info[2])
+
+        logger.debug(response)

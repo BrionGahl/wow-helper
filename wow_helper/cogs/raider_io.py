@@ -44,6 +44,7 @@ class RaiderIO(commands.Cog):
 
     @commands.command(aliases=['raiderscore', 'io'])
     async def score(self, ctx: commands.Context, name: Union[str, None], *, realm: Union[str, None]) -> None:
+        # TODO: Make this a callable function
         if name is None and realm is None:
             char_info = db.get_user_information(ctx.author.id)
         elif name is None or realm is None:

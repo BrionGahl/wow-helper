@@ -1,10 +1,18 @@
 import requests
+from typing import Union
 
 from wow_helper import config, utils
 
 logger = utils.get_logger(__name__)
 WARCRAFT_LOGS_CLIENT_API = 'https://www.warcraftlogs.com/api/v2/client'
 
+DIFFICULTY = {
+    5: 'Mythic',
+    4: 'Heroic',
+    3: 'Normal',
+    2: 'LFR',
+    1: 'Timewalking'
+}
 
 class WarcraftLogsAPI:
     def __init__(self):
@@ -20,32 +28,58 @@ class WarcraftLogsAPI:
         token = response.json()['access_token']
         return token
 
-    def _get_resource(self, body: dict) -> dict:
+    def _get_resource(self, body: str) -> dict:
         headers = {
             'Authorization': f'Bearer {self._access_token}'
         }
         response = self._session.get(WARCRAFT_LOGS_CLIENT_API, headers=headers, json={"query": body})
         return response.json()
 
-    def get_character_parses(self, character: str, realm: str, region: str) -> list:
+    def get_character_parses(self, character: str, realm: str, region: str) -> Union[dict, None]:
         body = """
                 query {
                     characterData {
-                        character(name: "Kailavoker", serverSlug: "Area-52", serverRegion: "us") {
-                            kazzara: encounterRankings(encounterID: 2688)
-                            amalamation: encounterRankings(encounterID: 2687)
-                            experiments: encounterRankings(encounterID: 2693)
-                            assault: encounterRankings(encounterID: 2682)
-                            rashok: encounterRankings(encounterID: 2680)
-                            zskarn: encounterRankings(encounterID: 2689)
-                            magmorax: encounterRankings(encounterID: 2683)
-                            echo: encounterRankings(encounterID: 2684)
-                            sark: encounterRankings(encounterID: 2685)
+                        character(name: "%s", serverSlug: "%s", serverRegion: "%s") {
+                            guilds {
+                                name
+                            }
+                            kazzara_dps: encounterRankings(encounterID: 2688)
+                            kazzara_hps: encounterRankings(encounterID: 2688, metric: hps)
+                            amalgamation_dps: encounterRankings(encounterID: 2687)
+                            amalgamation_hps: encounterRankings(encounterID: 2687, metric: hps)
+                            experiments_dps: encounterRankings(encounterID: 2693)
+                            experiments_hps: encounterRankings(encounterID: 2693, metric: hps)
+                            assault_dps: encounterRankings(encounterID: 2682)
+                            assault_hps: encounterRankings(encounterID: 2682, metric: hps)
+                            rashok_dps: encounterRankings(encounterID: 2680)
+                            rashok_hps: encounterRankings(encounterID: 2680, metric: hps)
+                            zskarn_dps: encounterRankings(encounterID: 2689)
+                            zskarn_hps: encounterRankings(encounterID: 2689, metric: hps)
+                            magmorax_dps: encounterRankings(encounterID: 2683)
+                            magmorax_hps: encounterRankings(encounterID: 2683, metric: hps)
+                            echo_dps: encounterRankings(encounterID: 2684)
+                            echo_hps: encounterRankings(encounterID: 2684, metric: hps)
+                            sark_dps: encounterRankings(encounterID: 2685)
+                            sark_hps: encounterRankings(encounterID: 2685, metric: hps)
                         }
                     }
                 }
-                """
+                """ % (character, realm, region)
 
-        data = self._get_resource(body)
-        logger.debug(data)
-        return data
+        response = self._get_resource(body).get('data')
+        if not response:
+            return None
+        response = response['characterData']['character']
+
+        parsed_output = {
+            'guild': response.pop('guilds')[0]['name'],
+        }
+
+        for key in response:
+            if len(response[key]['ranks']) == 0:
+                parsed_output[key] = [0.0, 'N/A']
+            else:
+                parsed_output[key] = [round(response[key]['ranks'][0]['rankPercent'], 1), DIFFICULTY[response[key]['difficulty']]]
+
+        return parsed_output
+
