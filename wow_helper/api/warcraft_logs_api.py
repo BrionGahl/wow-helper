@@ -4,7 +4,8 @@ from typing import Union
 from wow_helper import config, utils
 
 logger = utils.get_logger(__name__)
-WARCRAFT_LOGS_CLIENT_API = 'https://www.warcraftlogs.com/api/v2/client'
+WARCRAFT_LOGS_OAUTH_URL = 'https://www.warcraftlogs.com/oauth/token'
+WARCRAFT_LOGS_CLIENT_URL = 'https://www.warcraftlogs.com/api/v2/client'
 
 DIFFICULTY = {
     5: 'Mythic',
@@ -22,9 +23,15 @@ class WarcraftLogsAPI:
         self._session = requests.Session()
 
     @staticmethod
-    def _create_access_token(client_id: str, client_secret: str, region: str = 'us') -> str:
+    def _create_access_token(client_id: str, client_secret: str, region: str = 'us') -> Union[str, None]:
         data = {'grant_type': 'client_credentials'}
-        response = requests.post(f'https://www.warcraftlogs.com/oauth/token', data=data, auth=(client_id, client_secret))
+        logger.info(f'POST Request sent to {WARCRAFT_LOGS_OAUTH_URL}')
+        response = requests.post(WARCRAFT_LOGS_OAUTH_URL, data=data, auth=(client_id, client_secret))
+
+        if response.status_code != 200:
+            logger.error('Warcraft Logs API failed to generate access token.')
+            return
+
         token = response.json()['access_token']
         return token
 
@@ -32,7 +39,8 @@ class WarcraftLogsAPI:
         headers = {
             'Authorization': f'Bearer {self._access_token}'
         }
-        response = self._session.get(WARCRAFT_LOGS_CLIENT_API, headers=headers, json={"query": body})
+        logger.info(f'GET Request sent to {WARCRAFT_LOGS_CLIENT_URL}')
+        response = self._session.get(WARCRAFT_LOGS_CLIENT_URL, headers=headers, json={"query": body})
 
         if response.status_code != 200:
             logger.error('Warcraft Logs API is unresponsive.')

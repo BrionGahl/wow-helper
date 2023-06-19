@@ -10,7 +10,6 @@ from wow_helper.api.warcraft_logs_api import WarcraftLogsAPI
 logger = utils.get_logger(__name__)
 
 ABERRUS_RAID_IMG = 'https://assets.rpglogs.com/img/warcraft/zones/zone-33.png'
-DEFAULT_REGION = 'us'
 
 
 class WarcraftLogs(commands.Cog):
@@ -31,7 +30,7 @@ class WarcraftLogs(commands.Cog):
             await ctx.send(f'Usage: {config.bot_prefix()}parses CHARACTER REALM')
             return
         else:
-            char_info = (name, realm, DEFAULT_REGION)
+            char_info = (name, realm, config.default_region())
 
         if char_info is None:
             logger.error(f'Could not find information for user {ctx.author.id}.')

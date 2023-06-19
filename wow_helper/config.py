@@ -26,6 +26,10 @@ def bot_prefix() -> str:
     return os.environ.get("BOT_PREFIX")
 
 
+def default_region() -> str:
+    return os.environ.get("DEFAULT_REGION")
+
+
 def bot_token() -> str:
     return os.environ.get("BOT_TOKEN")
 

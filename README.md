@@ -8,7 +8,7 @@ tools into Discord.
 - [ **Install** ](#install)
   -  [ **Local Setup** ](#install-local)
   - [ **Database Setup** ](#install-db)
-- [ **Config** ](#config)
+  - [ **Configuration** ](#config)
 - [ **Usage** ](#usage)
 
 <a name="install"></a>
@@ -41,10 +41,12 @@ Currently, the bot is in early stages and is unable to be invited via link.
     ```
 <a name="install-db"></a>
 ### Database Setup
-W.I.P.
+Currently, the bot supports PostgreSQL databases. So long as a valid PostgreSQL database is connected tables will be 
+created automatically. Further support will be added in the future expanding upon this and added different acceptable
+dialects.
    
 <a name="config"></a>
-## Config
+### Configuration
 W.I.P.
 
 <a name="usage"></a>
