@@ -9,8 +9,7 @@ from wow_helper import utils, config, db
 logger = utils.get_logger(__name__)
 
 RAIDER_IMG = 'https://cdnassets.raider.io/images/brand/Icon_FullColor_Square.png'
-RAIDER_API = 'https://raider.io/api/v1/'
-DEFAULT_REGION = 'us'
+RAIDER_URL = 'https://raider.io/api/v1/'
 
 
 class RaiderIO(commands.Cog):
@@ -21,14 +20,14 @@ class RaiderIO(commands.Cog):
     @commands.command(description='Returns the current week\'s affixes', aliases=['affix'])
     async def affixes(self, ctx: commands.Context) -> None:
         guild_info = db.get_guild_information(ctx.guild.id)
-        region = DEFAULT_REGION if guild_info[2] is None else guild_info[2]
+        region = config.default_region() if guild_info[2] is None else guild_info[2]
         params = {
             'region': region,
             'locale': 'en'
         }
 
-        logger.info(f'GET Request sent to {RAIDER_API}mythic-plus/affixes')
-        response = requests.get(RAIDER_API + 'mythic-plus/affixes', params=params)
+        logger.info(f'GET Request sent to {RAIDER_URL}mythic-plus/affixes')
+        response = requests.get(RAIDER_URL + 'mythic-plus/affixes', params=params)
         if response.status_code != 200:
             logger.error('RaiderIO API is unresponsive.')
             await ctx.send('RaiderIO API is unresponsive')
@@ -52,7 +51,7 @@ class RaiderIO(commands.Cog):
             await ctx.send(f'Usage: {config.bot_prefix()}score CHARACTER REALM')
             return
         else:
-            char_info = (name, realm, DEFAULT_REGION)
+            char_info = (name, realm, config.default_region())
 
         if char_info is None:
             logger.error(f'Could not find information for user {ctx.author.id}.')
@@ -67,8 +66,8 @@ class RaiderIO(commands.Cog):
             'name': char_info[0],
             'fields': 'mythic_plus_scores_by_season:current'
         }
-        logger.info(f'GET Request sent to {RAIDER_API}characters/profile')
-        response = requests.get(RAIDER_API + 'characters/profile', params=params)
+        logger.info(f'GET Request sent to {RAIDER_URL}characters/profile')
+        response = requests.get(RAIDER_URL + 'characters/profile', params=params)
         if response.status_code != 200:
             logger.error('RaiderIO API is unresponsive.')
             await ctx.send('RaiderIO API is unresponsive.')
