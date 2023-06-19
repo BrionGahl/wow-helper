@@ -35,7 +35,7 @@ class User(commands.Cog):
             await ctx.message.author.send('Command timed out...')
             return
 
-        db.insert_or_update_user(ctx.author.id, ctx.guild.id, ctx.author.name, wow_name=name.content, wow_server=server.content, wow_region=reactions[reaction.emoji]) # need to insert if no exist update if exist
+        db.upsert_user(ctx.author.id, ctx.guild.id, ctx.author.name, wow_name=name.content, wow_server=server.content, wow_region=reactions[reaction.emoji])
         embed = discord.Embed(title='WoW Character Name Set!')
         embed.add_field(name='Congrats!', value='With this set, you can now automatically query data for your character!', inline=False)
         embed.add_field(name=f'{name.content}', value=f'{server.content}, {reactions[reaction.emoji].upper()}', inline=False)

@@ -10,15 +10,6 @@ prior to starting execution.
 """
 
 logger = utils.get_logger(__name__)
-
-print(r"""
- __      __ __      __   _  _     _               
- \ \    / /_\ \    / /__| || |___| |_ __  ___ _ _ 
-  \ \/\/ / _ \ \/\/ /___| __ / -_) | '_ \/ -_) '_|
-   \_/\_/\___/\_/\_/    |_||_\___|_| .__/\___|_|  
-                                   |_|            
-""")
-logger.info(f"Starting WoW-Helper version {utils.version()}.")
 bot = commands.Bot(intents=discord.Intents.all(), command_prefix=config.bot_prefix())
 
 
@@ -34,6 +25,7 @@ async def on_ready() -> None:
 
 
 def main() -> None:
+    logger.info(f"Starting WoW-Helper version {utils.version()}.")
     try:
         bot.run(config.bot_token())
     except discord.errors.LoginFailure as e:

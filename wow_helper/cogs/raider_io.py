@@ -44,11 +44,12 @@ class RaiderIO(commands.Cog):
 
     @commands.command(aliases=['raiderscore', 'io'])
     async def score(self, ctx: commands.Context, name: Union[str, None], *, realm: Union[str, None]) -> None:
+        # TODO: Make this a callable function
         if name is None and realm is None:
             char_info = db.get_user_information(ctx.author.id)
         elif name is None or realm is None:
             logger.error('Improper usage of score command.')
-            await ctx.send(f'Usage: {config.bot_prefix()}score [CHARACTER REALM]')
+            await ctx.send(f'Usage: {config.bot_prefix()}score CHARACTER REALM')
             return
         else:
             char_info = (name, realm, DEFAULT_REGION)
@@ -58,7 +59,7 @@ class RaiderIO(commands.Cog):
             await ctx.send('Be sure to use the command /set-character before executing this command with no arguments.')
             return
 
-        char_info = (char_info[0].lower(), char_info[1].lower().replace(' ', '-'), char_info[2])
+        char_info = (char_info[0].lower(), char_info[1].lower().replace(' ', '-').replace('\'', ''), char_info[2])
 
         params = {
             'region': char_info[2],
@@ -80,4 +81,5 @@ class RaiderIO(commands.Cog):
         embed.add_field(name=char_data['name'], value=char_data['race'], inline=False)
         embed.add_field(name=char_data['class'], value=char_data['active_spec_name'], inline=False)
         embed.add_field(name='Score', value=char_data['mythic_plus_scores_by_season'][0]['scores']['all'], inline=False)
+
         await ctx.send(embed=embed)
