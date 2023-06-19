@@ -33,6 +33,10 @@ class WarcraftLogsAPI:
             'Authorization': f'Bearer {self._access_token}'
         }
         response = self._session.get(WARCRAFT_LOGS_CLIENT_API, headers=headers, json={"query": body})
+
+        if response.status_code != 200:
+            logger.error('Warcraft Logs API is unresponsive.')
+            return {}
         return response.json()
 
     def get_character_parses(self, character: str, realm: str, region: str) -> Union[dict, None]:
@@ -76,10 +80,12 @@ class WarcraftLogsAPI:
         }
 
         for key in response:
-            if len(response[key]['ranks']) == 0:
-                parsed_output[key] = [0.0, 'N/A']
-            else:
-                parsed_output[key] = [round(response[key]['ranks'][0]['rankPercent'], 1), DIFFICULTY[response[key]['difficulty']]]
+            if parsed_output.get(key[:-4]) is None:
+                parsed_output[key[:-4]] = []
 
+            if len(response[key]['ranks']) == 0:
+                parsed_output[key[:-4]] += [0.0, 'N/A']
+            else:
+                parsed_output[key[:-4]] += [round(response[key]['ranks'][0]['rankPercent'], 1), DIFFICULTY[response[key]['difficulty']]]
         return parsed_output
 
