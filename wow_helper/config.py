@@ -50,6 +50,10 @@ def be_client_secret() -> str:
     return os.environ.get("BE_CLIENT_SECRET")
 
 
+def wow_audit_key() -> str:
+    return os.environ.get("WOW_AUDIT_KEY")
+
+
 def db_host() -> str:
     return os.environ.get("DB_HOST")
 

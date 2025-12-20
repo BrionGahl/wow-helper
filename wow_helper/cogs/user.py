@@ -28,7 +28,6 @@ class User(commands.Cog):
             message = await ctx.message.author.send('Please react with the appropriate region.')
             for key, value in reactions.items():
                 await message.add_reaction(key)
-
             reaction, user = await ctx.bot.wait_for('reaction_add', timeout=60.0, check=lambda r, u: u == ctx.author and str(r.emoji) in reactions)
         except asyncio.TimeoutError:
             logger.error(f'Command timed out for user {ctx.author.id} on guild {ctx.guild.id}')
@@ -40,6 +39,7 @@ class User(commands.Cog):
         embed.add_field(name='Congrats!', value='With this set, you can now automatically query data for your character!', inline=False)
         embed.add_field(name=f'{name.content}', value=f'{server.content}, {reactions[reaction.emoji].upper()}', inline=False)
 
+        await ctx.message.author.send(embed=embed)
         await ctx.send(embed=embed)
 
         logger.info(f'Successfully updated user data for user {ctx.author.id} on guild {ctx.guild.id}.')
